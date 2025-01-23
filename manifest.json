@@ -1,0 +1,51 @@
+{
+    "author" : "Onurhan Talan",
+    "manifest_version" : 3,
+    "version" : "1.0",
+    "name" : "ImageToText",
+    "description" : "Extracts text from a user specified region of the webpage.",
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "permissions" : [
+        "activeTab"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+          "matches": ["<all_urls>"],
+          "js": ["content.js"],
+          "css": ["styles.css"]
+        }
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+          "16": "icons/camera.png",
+          "48": "icons/camera.png",
+          "128": "icons/camera.png"
+        }
+    },
+    "commands" : {
+        "capture-Region" : {
+            "suggested-key" : {
+                "default" : "Alt+N"
+            },
+            "description" : "Initiate extracting action"
+        },
+        "_execute_action" : {
+            "suggested_key" : {
+                "default" : "Alt+M"
+            },
+            "description" : "Open up the popup"
+        }
+    },
+    "icons": {
+        "16": "icons/camera.png",
+        "48": "icons/camera.png",
+        "128": "icons/camera.png"
+    }
+
+}
