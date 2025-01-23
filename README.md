@@ -1,0 +1,1 @@
+This is a google chrome extension that allows user to extract the text of a user specified region of the webpage
