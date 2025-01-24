@@ -22,3 +22,13 @@
     display: none;
     z-index: 10000;
 }
+
+#inline-popup {
+    width: 33%;
+    height: 33%;
+    position: fixed;
+    right: 32px;
+    bottom: 32px;
+    background-color: #ffffff;
+    border-radius: 12px;
+}

@@ -53,11 +53,48 @@ const updateSelection = (event) => {
     selection.style.top = Math.min(currentY, startY) + 'px';
 }
 
-const endSelection = (event) => {
+const endSelection = () => {
     selectionCoordinates = selection.getBoundingClientRect();
     overlay.removeEventListener('mousedown', startSelection);
     overlay.removeEventListener('mousemove', updateSelection);
     overlay.removeEventListener('mouseup', endSelection);
     document.body.removeChild(overlay);
     document.body.removeChild(selection);
+    cropImg(imgURL, selectionCoordinates, (croppedImg) => {
+        renderInlinePopup(croppedImg);
+
+    });
+}
+
+const renderInlinePopup = (croppedImg) => {
+    const inlinePopup = document.createElement('div');
+    inlinePopup.id = 'inline-popup';
+    inlinePopup.innerHTML = 'TODO'
+    document.body.appendChild(inlinePopup);
+    
+}
+
+const cropImg = (imgURL, crop, callback) => {
+    const image = new Image();
+    image.src = imgURL;
+
+    image.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = crop.width;
+        canvas.height = crop.height;
+
+        const widthRatio = image.width / window.innerWidth;
+        const heightRatio = image.height / window.innerHeight;
+
+        ctx.drawImage(
+            image,
+            crop.x * widthRatio,
+            crop.y * heightRatio,
+            crop.width * widthRatio,
+            crop.height * heightRatio,
+            0, 0, crop.width, crop.height
+        );
+        callback(canvas.toDataURL());
+    }
 }
