@@ -1,7 +1,6 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if(message.action === 'initiateAction' && !isSelecting){
         imgURL = message.imgURL;
-        console.log(imgURL);
         initAction();
     }
 });
@@ -9,7 +8,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 let imgURL = null;
 let startX, startY;
 let selectionCoordinates = null;
-let isSelecting = false
+let isSelecting = false, isOpen = false;
 
 let overlay = null, selection = null;
 
@@ -55,6 +54,7 @@ const updateSelection = (event) => {
 
 const endSelection = () => {
     selectionCoordinates = selection.getBoundingClientRect();
+    isSelecting = false;
     overlay.removeEventListener('mousedown', startSelection);
     overlay.removeEventListener('mousemove', updateSelection);
     overlay.removeEventListener('mouseup', endSelection);
@@ -62,16 +62,62 @@ const endSelection = () => {
     document.body.removeChild(selection);
     cropImg(imgURL, selectionCoordinates, (croppedImg) => {
         renderInlinePopup(croppedImg);
-
     });
 }
 
 const renderInlinePopup = (croppedImg) => {
-    const inlinePopup = document.createElement('div');
-    inlinePopup.id = 'inline-popup';
-    inlinePopup.innerHTML = 'TODO'
-    document.body.appendChild(inlinePopup);
+    if(isOpen) { document.body.removeChild(document.getElementById("extension-popup")); }
     
+    const clipboardSvg = chrome.runtime.getURL("icons/clipboard-text.svg");
+    const closeSvg = chrome.runtime.getURL("icons/close.svg");
+
+    const popupHTML = `
+        <div id="extension-popup">
+            <div class="popup-header">
+                <button class="close-btn">
+                    <img src="${closeSvg}" alt="close">
+                </button>
+            </div>
+            <div class="popup-body">
+                <div class="image-container">
+                    <img src="${croppedImg}" alt="selected region">
+                </div>
+                <div class="text-container">
+                    <div id="dot-spinner">
+                        <div class="dot-spinner__dot"></div>
+                        <div class="dot-spinner__dot"></div>
+                        <div class="dot-spinner__dot"></div>
+                        <div class="dot-spinner__dot"></div>
+                        <div class="dot-spinner__dot"></div>
+                        <div class="dot-spinner__dot"></div>
+                        <div class="dot-spinner__dot"></div>
+                        <div class="dot-spinner__dot"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="popup-footer">
+                <button class="copy-btn" disabled=true>
+                    <img src="${clipboardSvg}" alt="copy text">
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', popupHTML);
+    isOpen = true;
+    const popup = document.getElementById("extension-popup");
+    const closeBtn = popup.querySelector(".close-btn");
+    const copyBtn = popup.querySelector(".copy-btn");
+    const textContainer = popup.querySelector(".text-container");
+
+    //TODO : using Tesseract.js extract the text from the image.
+    //       update the text-container
+    //       enable copyBtn
+
+
+    closeBtn.addEventListener('click', () => {
+        isOpen = false;
+        document.body.removeChild(popup);
+    });
 }
 
 const cropImg = (imgURL, crop, callback) => {

@@ -47,5 +47,11 @@
     "16": "icons/camera.png",
     "48": "icons/camera.png",
     "128": "icons/camera.png"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*.svg"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }
